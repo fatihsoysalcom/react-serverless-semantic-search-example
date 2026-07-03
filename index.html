@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Sunucusuz Semantik Arama</title>
+    <!-- React ve ReactDOM CDN'leri -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel CDN'i, JSX'i tarayıcıda dönüştürmek için -->
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        #root {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .loading-text {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        .no-results {
+            text-align: center;
+            color: #888;
+        }
+        .results-list {
+            list-style: none;
+            padding: 0;
+        }
+        .results-list li {
+            background-color: #f9fbfb;
+            border: 1px solid #e0e6ea;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .results-list li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        }
+        .results-list h3 {
+            margin: 0 0 8px 0;
+            color: #34495e;
+        }
+        .results-list p {
+            margin: 0;
+            color: #555;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Data for demonstration
+        const DOCUMENTS = [
+          { id: 1, title: "React Uygulamalarına Hızlı Arama", description: "React projelerinize anında arama yetenekleri ekleyin. Performanslı ve kullanıcı dostu arama deneyimi." },
+          { id: 2, title: "Sunucusuz Semantik Arama Entegrasyonu", description: "Backend sunucularına ihtiyaç duymadan, ultra hızlı semantik arama çözümleri entegre edin." },
+          { id: 3, title: "Web Performansı ve Kullanıcı Deneyimi", description: "1 milisaniyenin altında tepki süreleriyle kullanıcı deneyimini iyileştirin. Hızlı yüklenen sayfalar." },
+          { id: 4, title: "Doğal Dil Anlama ile Akıllı Arama", description: "Kullanıcı niyetini anlayan ve bağlamsal olarak alakalı sonuçlar sunan akıllı arama motorları." },
+          { id: 5, title: "Frontend Odaklı Arama Çözümleri", description: "React tabanlı uygulamalar için optimize edilmiş, doğrudan tarayıcıda çalışan arama sistemleri." },
+          { id: 6, title: "Geliştirme Maliyetlerini Azaltma", description: "Sunucusuz yaklaşımlarla operasyonel giderleri ve geliştirme maliyetlerini düşürün." },
+          { id: 7, title: "Vektör Tabanlı Arama Teknolojileri", description: "Semantik arama için vektör veritabanları ve embedding'ler kullanma." },
+        ];
+
+        // Simulate a semantic search API call
+        // In a real application, this function would make an API call to a serverless semantic search service
+        // (e.g., one built on a vector database like Pinecone, Weaviate, or a managed service).
+        // The "ultra-fast" aspect comes from the low latency of such services or client-side processing.
+        async function simulateSemanticSearch(query) {
+          // Simulate network delay for a realistic feel (e.g., sub-1ms is for the *service*, not network roundtrip)
+          await new Promise(resolve => setTimeout(resolve, 150)); // Simulating a fast API call + network
+
+          if (!query) {
+            return [];
+          }
+
+          const lowerQuery = query.toLowerCase();
+
+          const results = DOCUMENTS.map(doc => {
+            let score = 0;
+            const lowerTitle = doc.title.toLowerCase();
+            const lowerDescription = doc.description.toLowerCase();
+
+            // --- Semantic Search Simulation Logic (Simplified) ---
+            // In a real system, this would involve:
+            // 1. Generating an embedding for the 'query'.
+            // 2. Performing a vector similarity search against pre-computed embeddings of 'DOCUMENTS'.
+            // 3. Ranking results based on cosine similarity or other distance metrics.
+            // Here, we use enhanced keyword matching and simple "semantic hints" for demonstration.
+
+            // Direct keyword match (high relevance)
+            if (lowerTitle.includes(lowerQuery)) {
+              score += 10;
+            }
+            if (lowerDescription.includes(lowerQuery)) {
+              score += 5;
+            }
+
+            // Simple "semantic" keyword associations (simulating understanding related concepts)
+            // For example, if user searches "hızlı", documents about "performans" are also relevant.
+            if (lowerQuery.includes("hızlı") && lowerDescription.includes("performans")) {
+                score += 3;
+            }
+            if (lowerQuery.includes("sunucusuz") && lowerDescription.includes("backend olmadan")) {
+                score += 3;
+            }
+            if (lowerQuery.includes("yapay zeka") && lowerTitle.includes("akıllı arama")) {
+                score += 4;
+            }
+            if (lowerQuery.includes("vektör") && lowerDescription.includes("embedding")) {
+                score += 4;
+            }
+
+            return { ...doc, score };
+          })
+          .filter(doc => doc.score > 0)
+          .sort((a, b) => b.score - a.score); // Sort by highest score first
+
+          return results;
+        }
+
+        function App() {
+          const [query, setQuery] = React.useState("");
+          const [results, setResults] = React.useState([]);
+          const [loading, setLoading] = React.useState(false);
+
+          // Debounce search input to avoid excessive calls
+          React.useEffect(() => {
+            const handler = setTimeout(async () => {
+              setLoading(true);
+              const searchResults = await simulateSemanticSearch(query);
+              setResults(searchResults);
+              setLoading(false);
+            }, 300); // Debounce for 300ms
+
+            return () => {
+              clearTimeout(handler);
+            };
+          }, [query]); // Re-run effect when query changes
+
+          return (
+            <div>
+              <h1>React Uygulamanızda Sunucusuz Semantik Arama</h1>
+              <p>Bu örnek, React uygulamanıza sunucusuz ve ultra hızlı semantik arama entegrasyonunu göstermektedir. Geleneksel anahtar kelime tabanlı aramaların ötesine geçerek, kullanıcı niyetini anlamaya çalışan bir sistemin entegrasyonunu simüle eder.</p>
+
+              <input
+                type="text"
+                placeholder="Arama sorgunuzu girin (örn: hızlı arama, sunucusuz, yapay zeka)..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+
+              {loading && <p className="loading-text">Yükleniyor...</p>}
+
+              {!loading && results.length === 0 && query && <p className="no-results">Sonuç bulunamadı.</p>}
+              {!loading && results.length === 0 && !query && <p className="no-results">Aramaya başlamak için yukarıdaki kutuya yazın.</p>}
+
+              {!loading && results.length > 0 && (
+                <div>
+                  <h2>Arama Sonuçları:</h2>
+                  <ul className="results-list">
+                    {results.map((result) => (
+                      <li key={result.id}>
+                        <h3>{result.title}</h3>
+                        <p>{result.description}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // Render the React application into the 'root' div
+        ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+</body>
+</html>
